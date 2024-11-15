@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Components/Login';
 import Sidebar from './Components/SideBar';
-// import AdminDashboard from './pages/AdminDashboard';
-// import TeacherDashboard from './pages/TeacherDashboard';
+import TeacherDashboard from './Components/TeacherDashboard';
+import AdminDashboard from './Components/AdminDashboard';
 // import ParentDashboard from './pages/ParentDashboard';
 // import Attendance from './pages/Attendance';
 // import Progress from './pages/Progress';
@@ -15,6 +15,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path='/sidebar'  element={<Sidebar/>}/>
+        <Route path='/teacher'  element={<TeacherDashboard/>}/>
+        <Route path='/admin'  element={<AdminDashboard/>}/>
         {/* // <Route path="/admin/*" element={<AdminDashboard />} />
         // <Route path="/teacher/*" element={<TeacherDashboard />} />
         // <Route path="/parent/*" element={<ParentDashboard />} />

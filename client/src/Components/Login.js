@@ -1,27 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch,useSelector } from 'react-redux';
+import { login } from '../Features/UserSlice';
+
 
 function Login() {
   const [role, setRole] = useState('teacher');
+  const [pNumber, setPNumber] = useState(0);
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add authentication logic here
-    switch (role) {
-      case 'teacher':
-        navigate('/teacher');
-        break;
-      case 'parent':
-        navigate('/parent');
-        break;
-      case 'admin':
-        navigate('/admin');
-        break;
-      default:
-        break;
-    }
-  };
+  const dispatch=useDispatch()
+  const {msg,isLogin,user}=useSelector(state=>state.users)
+const handleSubmit=(e)=>{
+  // e.preventDefault()
+  try{
+    dispatch(login({pNumber, password}))
+    navigate('/teacher')
+    console.log(msg)
+  }catch(e){
+    console.log(e)
+  }
+}
 
   return (
     <div className="bg-gradient-to-br from-emerald-50 to-teal-100 min-h-screen">
@@ -55,23 +54,23 @@ function Login() {
             {/* Form fields */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                Phone Number
               </label>
               <input
-                type="text"
+                type="number"
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 required
               />
             </div>
 
             <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                     <input type="password" 
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                           className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                            required/>
                 </div>
-                <div class="text-right">
-                    <a href="#" class="text-sm text-emerald-600 hover:text-emerald-700">Forgot password?</a>
+                <div className="text-right">
+                    <a href="#" className="text-sm text-emerald-600 hover:text-emerald-700">Forgot password?</a>
                 </div>
 
 
