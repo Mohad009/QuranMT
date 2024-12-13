@@ -5,6 +5,7 @@ export const login=createAsyncThunk('users/login',async(userData)=>{
     try{
         const response=await axios.post('http://localhost:5000/login',{pNumber:userData.pNumber,password:userData.password})
         const user=response.data.user
+        localStorage.setItem('user', JSON.stringify(user));
         const msg=response.data.msg
         return {user,msg}
     }catch(e){
@@ -13,13 +14,25 @@ export const login=createAsyncThunk('users/login',async(userData)=>{
     }
 })
 
+//logout
+export const logout=createAsyncThunk("users/logout",async()=>{
+    try{
+      const response =await axios.post("http://localhost:5000/logout")
+      localStorage.removeItem('user');
+      const msg=response.data.msg
+      return ({msg})
+    }catch(e){
+  console.log(e)
+    }
+  })
+
 const initialState = {
-    user:null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
+    isLogin: !!localStorage.getItem('user'),
     isloading:false,
     isSuccess:false,
     isError:false,
     msg:null,
-    isLogin:false
     }
 export const userSlice=createSlice({
     name:"users",
@@ -31,16 +44,11 @@ export const userSlice=createSlice({
             state.isloading=true
       
           }).addCase(login.fulfilled,(state,action)=>{
-            if (action.payload.user) {
               state.isSuccess = true;
               state.isLogin = true;
               state.user = action.payload.user;
               state.msg = action.payload.msg;
-            } else {
-              state.isSuccess = false;
-              state.isLogin = false;
-              state.msg = action.payload.msg;
-            }
+              
           
           })
           .addCase(login.rejected,(state,action)=>{
@@ -48,6 +56,19 @@ export const userSlice=createSlice({
             state.isloading=false
             state.msg=action.payload.msg
           })
+
+          builder.addCase(logout.pending, (state) => {
+            state.isloading = true;
+          })
+          .addCase(logout.fulfilled, (state,action) => {
+            // Clear user data or perform additional cleanup if needed
+            state.isLogin = false;
+            state.user = null;
+            state.msg = action.payload.msg;
+          })
+          .addCase(logout.rejected, (state) => {
+            state.isError = true;
+          });
     }
 })
 

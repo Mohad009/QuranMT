@@ -1,22 +1,114 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { RiDashboardLine } from 'react-icons/ri';
+import { MdOutlinePersonOutline } from 'react-icons/md';
+import { TbProgress } from 'react-icons/tb';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { BsCalendarCheck } from 'react-icons/bs';
+import { FiLogOut } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../Features/UserSlice';
 
 function Sidebar() {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.users);
+  const linkClasses = "flex items-center px-4 py-3";
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+  
   return (
-    <aside className="bg-emerald-800 text-white w-64 flex-shrink-0">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold">Quran MT</h1>
-        <p className="text-sm text-emerald-200">Teacher Dashboard</p>
+    <aside className="bg-emerald-800 text-white w-64 flex-shrink-0 relative">
+      <div className="p-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">Quran MT</h1>
+          <p className="text-sm text-emerald-200">Teacher Dashboard</p>
+        </div>
+        {/* Profile Icon and Dropdown */}
+        <div className="relative">
+          <button 
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="p-2 rounded-full hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
+              {user?.name ? user.name[0].toUpperCase() : 'U'}
+            </div>
+          </button>
+          
+          {/* Dropdown Menu */}
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1" role="menu">
+                <div className="px-4 py-2 text-sm text-gray-700 border-b">
+                  <p className="font-medium">{user?.name || 'User'}</p>
+                  <p className="text-xs text-gray-500">{user?.phone || ''}</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                  role="menuitem"
+                >
+                  <FiLogOut className="mr-2" />
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       
       <nav className="mt-8">
-        <Link to="/dashboard" className="flex items-center px-4 py-3 bg-emerald-900">
-          <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-          </svg>
+        <NavLink 
+          to="/teacher" 
+          className={({ isActive }) => 
+            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+          }
+        >
+          <RiDashboardLine className="w-5 h-5 mr-3" />
           Dashboard
-        </Link>
-        {/* Add other navigation links similarly */}
+        </NavLink>
+
+        <NavLink 
+          to="/attendance" 
+          className={({ isActive }) => 
+            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+          }
+        >
+          <BsCalendarCheck className="w-5 h-5 mr-3" />
+          Attendance
+        </NavLink>
+
+        <NavLink 
+          to="/progress" 
+          className={({ isActive }) => 
+            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+          }
+        >
+          <TbProgress className="w-5 h-5 mr-3" />
+          Progress Tracking
+        </NavLink>
+
+        <NavLink 
+          to="/users" 
+          className={({ isActive }) => 
+            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+          }
+        >
+          <MdOutlinePersonOutline className="w-5 h-5 mr-3" />
+          Users
+        </NavLink>
+
+        <NavLink 
+          to="/settings" 
+          className={({ isActive }) => 
+            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+          }
+        >
+          <IoSettingsOutline className="w-5 h-5 mr-3" />
+          Settings
+        </NavLink>
       </nav>
     </aside>
   );

@@ -1,25 +1,24 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import { login } from '../Features/UserSlice';
-
+import { Navigate } from 'react-router-dom';
 
 function Login() {
   const [role, setRole] = useState('teacher');
   const [pNumber, setPNumber] = useState(0);
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
   const dispatch=useDispatch()
+  const userTypes=['teacher','admin']
   const {msg,isLogin,user}=useSelector(state=>state.users)
+  console.log(user)
 const handleSubmit=(e)=>{
-  // e.preventDefault()
-  try{
-    dispatch(login({pNumber, password}))
-    navigate('/teacher')
-    console.log(msg)
-  }catch(e){
-    console.log(e)
+  e.preventDefault();
+  dispatch(login({pNumber, password}))
+  if (isLogin) {
+    return <Navigate to={`/${role}`} replace />;
   }
+
+
 }
 
   return (
@@ -27,14 +26,14 @@ const handleSubmit=(e)=>{
       <div className="container mx-auto px-4 h-screen flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-emerald-600">Quran LMS</h1>
+            <h1 className="text-3xl font-bold text-emerald-600">Quran Memorization Tracker</h1>
             <p className="text-gray-600 mt-2">Welcome back! Please login to continue.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Role Selection */}
             <div className="flex space-x-4 mb-6">
-              {['teacher', 'parent'].map((roleOption) => (
+              {userTypes.map((roleOption) => (
                 <label key={roleOption} className="flex-1">
                   <input
                     type="radio"
@@ -57,9 +56,10 @@ const handleSubmit=(e)=>{
                 Phone Number
               </label>
               <input
-                type="number"
+                type="tel"
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 required
+                onChange={(e) => setPNumber(e.target.value)}
               />
             </div>
 
@@ -67,15 +67,17 @@ const handleSubmit=(e)=>{
                     <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                     <input type="password" 
                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                           onChange={(e) => setPassword(e.target.value)}
                            required/>
+                           
                 </div>
                 <div className="text-right">
-                    <a href="#" className="text-sm text-emerald-600 hover:text-emerald-700">Forgot password?</a>
+                    {/* <a href="#" className="text-sm text-emerald-600 hover:text-emerald-700">Forgot password?</a> */}
+                    {msg}
                 </div>
 
 
             <button
-              type="submit"
               className="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700 transition duration-200"
             >
               Login
