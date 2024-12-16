@@ -1,6 +1,5 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState} from 'react';
 import { useSelector,useDispatch } from 'react-redux';
-import { fetchStudents } from "../Features/studentSlice";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 import { recordAttendance } from '../Features/studentSlice';
 
@@ -12,9 +11,7 @@ const AttendancePage = () => {
   const [attendance,setAttendance]=useState({})
 
 
-  useEffect(()=>{
-    dispatch(fetchStudents(user._id))
-  },[dispatch])
+
 
   const handleAttendanceChange = (studentId) => {
     setAttendance(prev => ({

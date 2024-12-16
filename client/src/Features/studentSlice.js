@@ -37,6 +37,26 @@ export const fetchAttendance = createAsyncThunk(
       }
     }
   );
+
+
+//update students collection and add new hifz
+export const updateHifz = createAsyncThunk(
+  "students/updateHifz",
+  async ({ studentId, hifzData }) => {
+    console.log('In thunk - hifzData:', hifzData);
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/updateHifz/${studentId}`,
+        hifzData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data.error || 'Failed to update hifz';
+    }
+  }
+);
+
+
 const initialState = {
     students: [],
     countStudents: 0,
@@ -98,7 +118,28 @@ export const studentSlice=createSlice({
       state.error = action.error.message;
     });
 
-    
+    //add hifz record
+    builder
+    // ... existing reducers ...
+    .addCase(updateHifz.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(updateHifz.fulfilled, (state, action) => {
+      state.loading = false;
+      // Update the specific student in the state
+      const index = state.students.findIndex(
+        student => student._id === action.payload.student._id
+      );
+      if (index !== -1) {
+        state.students[index] = action.payload.student;
+      }
+    })
+    .addCase(updateHifz.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+
     }
 })
 

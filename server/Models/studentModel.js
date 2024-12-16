@@ -4,11 +4,16 @@ const studentSchema=mongoose.Schema({
     lastName:{type:String,required:true},
     teacherId:{type:mongoose.Schema.Types.ObjectId,ref: 'users',required:true},
     parentNumber:{type:Number,required:true,unique: true},
-    hifz:{
-        chapter:{type:[String],default:[]},
-        ayahRange:{type:[String],default:[]},
-        mark:{type:[Number],default:[]}
-    }
+    hifz: [
+        {
+          chapter: { type: String},    
+          ayahRange: { type: String}, 
+          mark: { type: Number },      
+          notes: { type: String },                     
+          date: { type: Date, default: Date.now },     
+        }
+      ]
+      
 })
 
 const studentModel=mongoose.model('students',studentSchema)

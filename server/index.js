@@ -146,3 +146,45 @@ app.post('/recordAttendance', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch attendance records' });
     }
   });
+
+
+
+
+  //update student and add new hifz
+  app.put('/updateHifz/:studentId', async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const { chapter, ayahRange, mark, notes } = req.body;
+      const objectId = new mongoose.Types.ObjectId(studentId)
+  
+      // Find student and update by pushing new hifz record
+      const updatedStudent = await studentModel.findByIdAndUpdate(
+        objectId,
+        {
+          $push: {
+            hifz: {
+              chapter,
+              ayahRange,
+              mark,
+              notes,
+              date: new Date()
+            }
+          }
+        },
+        { new: true } 
+      )
+  
+      if (!updatedStudent) {
+        return res.status(404).json({ error: 'Student not found' });
+      }
+  
+      res.status(200).json({
+        message: 'Hifz progress updated successfully',
+        student: updatedStudent
+      });
+  
+    } catch (error) {
+      console.error('Error updating hifz:', error);
+      res.status(500).json({ error: 'Failed to update hifz progress' });
+    }
+  });

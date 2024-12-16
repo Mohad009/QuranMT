@@ -1,5 +1,64 @@
-import React from "react";
+import React,{useState} from "react";
+import { useSelector,useDispatch } from "react-redux";
+import surat from "../quranSurahData";
+import { updateHifz } from "../Features/studentSlice";
 const ProgressTracking = () => {
+  const {user}=useSelector((state)=>state.users)
+  const dispatch=useDispatch()
+  const {students}=useSelector(state=>state.students)
+  const [selectedStudent, setSelectedStudent] = useState('');
+  const [formData, setFormData] = useState({
+    chapter: '',
+    ayahRangeFrom: '',
+    ayahRangeTo: '',
+    mark: 0,
+    notes: ''
+  });
+
+
+
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit =  (e) => {
+    e.preventDefault();
+    
+    const combinedFormData = {
+      ...formData,
+      ayahRange: `${formData.ayahRangeFrom}-${formData.ayahRangeTo}`,
+    };
+  
+  // Remove the individual range fields
+  delete combinedFormData.ayahRangeFrom;
+  delete combinedFormData.ayahRangeTo;
+  console.log(combinedFormData)
+    try {
+       dispatch(updateHifz({
+        studentId: selectedStudent,
+        hifzData: combinedFormData
+      }));
+
+      // Reset form after successful submission
+      setFormData({
+        chapter: '',
+        ayahRangeFrom: '',
+        ayahRangeTo: '',
+        mark: 0,
+        notes: ''
+      });
+      alert('Progress recorded successfully!');
+    } catch (err) {
+      alert('Failed to record progress: ' + err.message);
+    }
+  };
     return (
       <div className="flex h-screen">
         <main className="flex-1 overflow-y-auto">
@@ -10,56 +69,43 @@ const ProgressTracking = () => {
           </header>
   
           <div className="p-6">
-            <StudentSelect />
-            <ProgressForm />
-            <ProgressHistory />
-          </div>
-        </main>
-      </div>
-    );
-  };
-  
-  export default ProgressTracking;
-
-
-
-  const StudentSelect = () => {
-    return (
-      <div className="mb-6">
+          <div className="mb-6">
         <label htmlFor="studentSelect" className="block text-sm font-medium text-gray-700 mb-2">
           Select Student
         </label>
         <select
           id="studentSelect"
+          value={selectedStudent}
+          onChange={(e)=>setSelectedStudent(e.target.value)}
           className="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
         >
-          <option value="">Choose a student...</option>
-          <option value="ST001">Ahmed Ali - ST001</option>
-          <option value="ST002">Sara Khan - ST002</option>
+          <option >Choose a student...</option>
+   {students.map((s)=>
+          <option value={s._id} key={s._id}>
+            {s.firstName} {s.lastName}</option>
+  )}
+
         </select>
       </div>
-    );
-  };
-  
-
-
-  const ProgressForm = () => {
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      // Handle form submission
-    };
-  
-    return (
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Record New Progress</h3>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Surah</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+              <select 
+               name='chapter'
+               value={formData.chapter}
+                onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
                 <option value="">Select Surah...</option>
-                <option value="1">Al-Fatiha</option>
-                <option value="2">Al-Baqarah</option>
+        {
+          surat.map((surah)=>{
+            return(
+              <option value={surah.surah} key={surah.surah}>{surah.name}</option>
+            )
+          })
+        }
               </select>
             </div>
   
@@ -69,22 +115,51 @@ const ProgressTracking = () => {
                 <input
                   type="number"
                   placeholder="From"
+                  name="ayahRangeFrom"
+                  value={formData.ayahRangeFrom}
+                  onChange={handleInputChange}
                   className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
                 />
                 <input
                   type="number"
                   placeholder="To"
+                  name="ayahRangeTo"
+                  value={formData.ayahRangeTo}
+                  onChange={handleInputChange}
                   className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
                 />
               </div>
             </div>
   
-            {/* Quality Rating and Type radio groups */}
-            {/* ... Similar conversion for radio groups ... */}
+            <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mark</label>
+                  <div className="flex space-x-4">
+                    {[
+                      { value: "0", label: "Not Memorized" },
+                      { value: "1", label: "Partially" },
+                      { value: "2", label: "Fully Memorized" }
+                    ].map(({ value, label }) => (
+                      <label key={value} className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="mark"
+                          value={value}
+                          checked={formData.mark === value}
+                          onChange={handleInputChange}
+                          className="form-radio text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <span className="ml-2">{value} - {label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
   
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
               <textarea
+                name="notes"
+                onChange={handleInputChange}
+                value={formData.notes}
                 rows="3"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
                 placeholder="Add any additional notes..."
@@ -102,11 +177,24 @@ const ProgressTracking = () => {
           </div>
         </form>
       </div>
+            <ProgressHistory studentsHifz={students} surah={surat} studentSelected={selectedStudent}/>
+          </div>
+        </main>
+      </div>
     );
   };
   
+  export default ProgressTracking;
 
-  const ProgressHistory = () => {
+
+
+
+  
+
+  
+
+  const ProgressHistory = ({studentsHifz,surah,studentSelected}) => {
+    const filteredStudentsHifz=studentsHifz.filter((s)=>s._id===studentSelected)
     return (
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b">
@@ -119,26 +207,24 @@ const ProgressTracking = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Surah</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ayah Range</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mark</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-09-15</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Al-Baqarah</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1-5</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    New
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
-                    Excellent
-                  </span>
-                </td>
+                {filteredStudentsHifz.map((s)=>s.hifz.map((h)=>(
+              <tr key={h._id}>
+
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(h.date).toLocaleDateString()}
+                    </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{surah.find((s) => s.surah === h.chapter)?.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{h.ayahRange}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{h.mark}</td>
+            
               </tr>
+                ))
+                )}
+
             </tbody>
           </table>
         </div>
