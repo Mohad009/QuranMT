@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import Sidebar from './SideBar';
+
 
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('teachers');
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
+   
       <main className="flex-1 overflow-y-auto">
         <Header />
         <div className="p-6">

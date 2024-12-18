@@ -8,7 +8,7 @@ function Login() {
   const [pNumber, setPNumber] = useState(0);
   const [password, setPassword] = useState('');
   const dispatch=useDispatch()
-  const userTypes=['teacher','admin']
+  const userTypes=['teacher','admin','parent']
   const {msg,isLogin,user}=useSelector(state=>state.users)
   console.log(user)
 const handleSubmit=(e)=>{

@@ -19,6 +19,41 @@ function Sidebar() {
     dispatch(logout());
   };
   
+  // Define navigation links based on user role
+  const getNavLinks = () => {
+    const links = [];
+
+    switch (user?.utype) {
+      case 'admin':
+        links.push(
+          { to: '/admin', icon: RiDashboardLine, text: 'Dashboard' },
+          { to: '/manageUsers', icon: MdOutlinePersonOutline, text: 'Users' },
+          { to: '/manageStudents', icon: MdOutlinePersonOutline, text: 'Students' },
+          { to: '/progress', icon: TbProgress, text: 'Progress Tracking' },
+          { to: '/settings', icon: IoSettingsOutline, text: 'Settings' }
+        );
+        break;
+      case 'teacher':
+        links.push(
+          { to: '/teacher', icon: RiDashboardLine, text: 'Dashboard' },
+          { to: '/attendance', icon: BsCalendarCheck, text: 'Attendance' },
+          { to: '/progress', icon: TbProgress, text: 'Progress Tracking' },
+          { to: '/settings', icon: IoSettingsOutline, text: 'Settings' }
+        );
+        break;
+      case 'parent':
+        links.push(
+          { to: '/parent-dashboard', icon: RiDashboardLine, text: 'Dashboard' },
+          { to: '/settings', icon: IoSettingsOutline, text: 'Settings' }
+        );
+        break;
+      default:
+        break;
+    }
+
+    return links;
+  };
+
   return (
     <aside className="bg-emerald-800 text-white w-64 flex-shrink-0 relative">
       <div className="p-4 flex justify-between items-center">
@@ -60,64 +95,18 @@ function Sidebar() {
       </div>
       
       <nav className="mt-8">
-        <NavLink 
-          to="/teacher" 
-          className={({ isActive }) => 
-            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
-          }
-        >
-          <RiDashboardLine className="w-5 h-5 mr-3" />
-          Dashboard
-        </NavLink>
-
-        <NavLink 
-          to="/attendance" 
-          className={({ isActive }) => 
-            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
-          }
-        >
-          <BsCalendarCheck className="w-5 h-5 mr-3" />
-          Attendance
-        </NavLink>
-
-        <NavLink 
-          to="/progress" 
-          className={({ isActive }) => 
-            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
-          }
-        >
-          <TbProgress className="w-5 h-5 mr-3" />
-          Progress Tracking
-        </NavLink>
-
-        <NavLink 
-          to="/manageUsers" 
-          className={({ isActive }) => 
-            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
-          }
-        >
-          <MdOutlinePersonOutline className="w-5 h-5 mr-3" />
-          Users
-        </NavLink>
-        <NavLink 
-          to="/manageStudents" 
-          className={({ isActive }) => 
-            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
-          }
-        >
-          <MdOutlinePersonOutline className="w-5 h-5 mr-3" />
-          Students
-        </NavLink>
-
-        <NavLink 
-          to="/settings" 
-          className={({ isActive }) => 
-            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
-          }
-        >
-          <IoSettingsOutline className="w-5 h-5 mr-3" />
-          Settings
-        </NavLink>
+        {getNavLinks().map((link) => (
+          <NavLink 
+            key={link.to}
+            to={link.to} 
+            className={({ isActive }) => 
+              `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+            }
+          >
+            <link.icon className="w-5 h-5 mr-3" />
+            {link.text}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );
