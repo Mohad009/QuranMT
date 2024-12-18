@@ -1,9 +1,9 @@
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit'
 import axios from 'axios'
 //get students
-export const fetchStudents=createAsyncThunk("students/fetchStudents",async(teacherId)=>{
+export const fetchStudentsByTeacher=createAsyncThunk("students/fetchStudentsByTeacher",async(teacherId)=>{
     try{
-      const response=await axios.get(`http://localhost:5000/fetchStudent/${teacherId}`)
+      const response=await axios.get(`http://localhost:5000/fetchStudentsByTeacher/${teacherId}`)
       return {students:response.data.students,countStudents:response.data.count}
         
     }catch(e){
@@ -56,6 +56,62 @@ export const updateHifz = createAsyncThunk(
   }
 );
 
+// Fetch all students
+export const fetchStudents = createAsyncThunk(
+  'students/fetchStudents',
+  async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/students');
+      return response.data;
+    } catch (error) {
+      throw error.response.data.error || 'Failed to fetch students';
+    }
+  }
+);
+
+// Add new student
+export const addStudent = createAsyncThunk(
+  'students/addStudent',
+  async (studentData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/addStudent', {
+        fname: studentData.firstName,
+        lname: studentData.lastName,
+        teacherId: studentData.teacherId,
+        parentNum: studentData.parentNumber
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data.error || 'Failed to add student';
+    }
+  }
+);
+
+// Update student
+export const updateStudent = createAsyncThunk(
+  'students/updateStudent',
+  async ({ id, studentData }) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/students/${id}`, studentData);
+      return response.data;
+    } catch (error) {
+      throw error.response.data.error || 'Failed to update student';
+    }
+  }
+);
+
+// Delete student
+export const deleteStudent = createAsyncThunk(
+  'students/deleteStudent',
+  async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/students/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data.error || 'Failed to delete student';
+    }
+  }
+);
 
 const initialState = {
     students: [],
@@ -74,16 +130,16 @@ export const studentSlice=createSlice({
         builder
 
         //fetch students
-        .addCase(fetchStudents.pending, (state) => {
+        .addCase(fetchStudentsByTeacher.pending, (state) => {
           state.loading = true;
           state.error = null;
         })
-        .addCase(fetchStudents.fulfilled, (state, action) => {
+        .addCase(fetchStudentsByTeacher.fulfilled, (state, action) => {
           state.loading = false;
           state.students = action.payload.students;
           state.countStudents = action.payload.countStudents;
         })
-        .addCase(fetchStudents.rejected, (state, action) => {
+        .addCase(fetchStudentsByTeacher.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload;
         });
@@ -120,7 +176,6 @@ export const studentSlice=createSlice({
 
     //add hifz record
     builder
-    // ... existing reducers ...
     .addCase(updateHifz.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -136,6 +191,81 @@ export const studentSlice=createSlice({
       }
     })
     .addCase(updateHifz.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+
+    // Fetch students
+    builder
+    .addCase(fetchStudents.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchStudents.fulfilled, (state, action) => {
+      state.loading = false;
+      state.students = action.payload;
+    })
+    .addCase(fetchStudents.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    })
+
+    // Add student
+    .addCase(addStudent.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.isSuccess = false;
+    })
+    .addCase(addStudent.fulfilled, (state, action) => {
+      state.loading = false;
+      state.isSuccess = true;
+      state.msg = action.payload.msg;
+      if (action.payload.student) {
+        state.students.push(action.payload.student);
+      }
+    })
+    .addCase(addStudent.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+      state.isSuccess = false;
+    })
+
+    // Update student
+    .addCase(updateStudent.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.isSuccess = false;
+    })
+    .addCase(updateStudent.fulfilled, (state, action) => {
+      state.loading = false;
+      state.isSuccess = true;
+      state.msg = action.payload.msg;
+      const index = state.students.findIndex(
+        student => student._id === action.payload.student._id
+      );
+      if (index !== -1) {
+        state.students[index] = action.payload.student;
+      }
+    })
+    .addCase(updateStudent.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+      state.isSuccess = false;
+    })
+
+    // Delete student
+    .addCase(deleteStudent.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(deleteStudent.fulfilled, (state, action) => {
+      state.loading = false;
+      state.msg = action.payload.msg;
+      state.students = state.students.filter(
+        student => student._id !== action.payload.id
+      );
+    })
+    .addCase(deleteStudent.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message;
     });

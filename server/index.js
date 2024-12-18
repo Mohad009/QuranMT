@@ -26,6 +26,7 @@ app.post('/registerUser',async(req,res)=>{
             name:req.body.name,
             PNumber:req.body.PNumber,
             utype:req.body.utype,
+            isActive:req.body.isActive,
             password:hashedPass
         })
 
@@ -81,8 +82,7 @@ app.post('/addStudent',async(req,res)=>{
 })
 
 //fetch student
-//get post api
-app.get('/fetchStudent/:teacherId',async(req,res)=>{
+app.get('/fetchStudentsByTeacher/:teacherId',async(req,res)=>{
     try{
         const {teacherId}=req.params
         const objectId = new mongoose.Types.ObjectId(teacherId);
@@ -209,5 +209,58 @@ app.post('/recordAttendance', async (req, res) => {
     } catch (error) {
       console.error('Error deleting user:', error);
       res.status(500).json({ error: 'Failed to delete user' });
+    }
+  });
+
+  // Get all students
+  app.get('/students', async (req, res) => {
+    try {
+      const students = await studentModel.find()
+        .populate('teacherId', 'name') // Populate teacher data, selecting only the name field
+        .exec();
+      res.status(200).json(students);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      res.status(500).json({ error: 'Failed to fetch students' });
+    }
+  });
+
+  // Delete student
+  app.delete('/students/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      await studentModel.findByIdAndDelete(id);
+      res.status(200).json({ msg: 'Student deleted successfully', id });
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      res.status(500).json({ error: 'Failed to delete student' });
+    }
+  });
+
+  // Update student
+  app.put('/students/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { firstName, lastName, teacherId, parentNumber } = req.body;
+      
+      const updatedStudent = await studentModel.findByIdAndUpdate(
+        id,
+        {
+          firstName,
+          lastName,
+          teacherId,
+          parentNumber
+        },
+        { new: true }
+      );
+      
+      if (!updatedStudent) {
+        return res.status(404).json({ error: 'Student not found' });
+      }
+      
+      res.status(200).json({ msg: 'Student updated successfully', student: updatedStudent });
+    } catch (error) {
+      console.error('Error updating student:', error);
+      res.status(500).json({ error: 'Failed to update student' });
     }
   });

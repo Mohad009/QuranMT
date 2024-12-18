@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import ProgressTracking from './Components/PrograssTracking';
 import AttendancePage from './Components/AttendancePage';
 import SettingsPage from './Components/SettingsPage';
-// import ManageUsers from './Components/ManageUsers';
+import ManageStudents from './Components/students/ManageStudents';
 import ProtectedRoute from './Components/ProtectedRoute';
 import ManageUsers from './Components/users/ManageUsers';
 
@@ -29,6 +29,7 @@ function App() {
             <Route path="/attendance" element={<ProtectedRoute><AttendancePage/></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage/></ProtectedRoute>} />
             <Route path="/manageUsers" element={<ProtectedRoute><ManageUsers/></ProtectedRoute>} />
+            <Route path="/manageStudents" element={<ProtectedRoute><ManageStudents/></ProtectedRoute>} />
           </Routes>
         </main>
       </div>

@@ -99,6 +99,15 @@ function Sidebar() {
           <MdOutlinePersonOutline className="w-5 h-5 mr-3" />
           Users
         </NavLink>
+        <NavLink 
+          to="/manageStudents" 
+          className={({ isActive }) => 
+            `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
+          }
+        >
+          <MdOutlinePersonOutline className="w-5 h-5 mr-3" />
+          Students
+        </NavLink>
 
         <NavLink 
           to="/settings" 

@@ -8,6 +8,7 @@ export const registerUser=createAsyncThunk('users/registerUser',(async(data)=>{
       name:data.name,
       PNumber:data.pNumber,
       utype:data.utype,
+      isActive:data.isActive,
       password:data.password
     })
     const {user,msg}=response.data
@@ -81,9 +82,12 @@ export const userSlice=createSlice({
         state.isloading=true
   
       }).addCase(registerUser.fulfilled,(state,action)=>{
+          state.isloading = false;
           state.isSuccess = true;
           state.msg = action.payload.msg;
-          
+          if (action.payload.user) {
+            state.users.push(action.payload.user);
+          }
       
       })
       .addCase(registerUser.rejected,(state,action)=>{

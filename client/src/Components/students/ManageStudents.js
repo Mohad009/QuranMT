@@ -1,56 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllUsers } from '../../Features/UserSlice';
+import { fetchStudents } from '../../Features/studentSlice';
 import SearchAndFilter from './SearchAndFilter';
-import UsersTable from './UsersTable';
-import UserModal from './UserModal';
+import StudentsTable from './StudentsTable';
+import StudentModal from './StudentModal';
 
-const ManageUsers = () => {
+const ManageStudents = () => {
   const dispatch = useDispatch();
-  const { loading, error, users, isSuccess } = useSelector(state => state.users);
+  const { loading, error, students, isSuccess } = useSelector(state => state.students);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [filteredStudents, setFilteredStudents] = useState([]);
 
   const [filters, setFilters] = useState({
     search: '',
-    userType: '',
-    status: ''
+    teacherId: ''
   });
 
   useEffect(() => {
-    dispatch(fetchAllUsers());
+    dispatch(fetchStudents());
   }, [dispatch]);
 
   useEffect(() => {
-    if (users) {
-      let filtered = [...users];
+    if (students) {
+      let filtered = [...students];
       
       if (filters.search) {
-        filtered = filtered.filter(user => 
-          user.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
-          user.PNumber?.toString().includes(filters.search)
+        filtered = filtered.filter(student => 
+          student.firstName?.toLowerCase().includes(filters.search.toLowerCase()) ||
+          student.lastName?.toLowerCase().includes(filters.search.toLowerCase())
         );
       }
       
-      if (filters.userType) {
-        filtered = filtered.filter(user => user.utype === filters.userType);
+      if (filters.teacherId) {
+        filtered = filtered.filter(student => student.teacherId === filters.teacherId);
       }
       
-      if (filters.status) {
-        filtered = filtered.filter(user => 
-          filters.status === 'active' ? user.isActive : !user.isActive
-        );
-      }
-      
-      setFilteredUsers(filtered);
+      setFilteredStudents(filtered);
     }
-  }, [users, filters]);
+  }, [students, filters]);
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(fetchAllUsers());
+      dispatch(fetchStudents());
       setIsModalOpen(false);
     }
   }, [isSuccess, dispatch]);
@@ -59,15 +52,15 @@ const ManageUsers = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const handleAddUser = () => {
+  const handleAddStudent = () => {
     setModalMode('add');
-    setSelectedUser(null);
+    setSelectedStudent(null);
     setIsModalOpen(true);
   };
 
-  const handleEditUser = (user) => {
+  const handleEditStudent = (student) => {
     setModalMode('edit');
-    setSelectedUser(user);
+    setSelectedStudent(student);
     setIsModalOpen(true);
   };
 
@@ -78,29 +71,29 @@ const ManageUsers = () => {
     <div className="h-full overflow-y-auto">
       <header className="bg-white shadow-sm">
         <div className="flex items-center justify-between px-6 py-4">
-          <h2 className="text-xl font-semibold text-gray-800">Manage Users</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Manage Students</h2>
           <button
-            onClick={handleAddUser}
+            onClick={handleAddStudent}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
           >
-            Add New User
+            Add New Student
           </button>
         </div>
       </header>
 
       <div className="p-6">
         <SearchAndFilter onFilterChange={handleFilterChange} filters={filters} />
-        <UsersTable users={filteredUsers} onEditUser={handleEditUser} />
+        <StudentsTable students={filteredStudents} onEditStudent={handleEditStudent} />
       </div>
 
-      <UserModal
+      <StudentModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
-        user={selectedUser}
+        student={selectedStudent}
       />
     </div>
   );
 };
 
-export default ManageUsers; 
+export default ManageStudents; 
