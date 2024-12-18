@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-
+import { registerUser } from '../Features/UserSlice';
 const ManageUsers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
@@ -221,9 +221,18 @@ const SearchAndFilter = () => {
       }
     }, [user, mode]);
   
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    };
+  
     const handleSubmit = (e) => {
       e.preventDefault();
       // Handle form submission
+      console.log('Form submitted:', formData);
       onClose();
     };
   
@@ -237,7 +246,66 @@ const SearchAndFilter = () => {
               {mode === 'add' ? 'Add New User' : 'Edit User'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Form fields */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  User Type
+                </label>
+                <select
+                  name="userType"
+                  value={formData.userType}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                >
+                  <option value="teacher">Teacher</option>
+                  <option value="student">Student</option>
+                  <option value="parent">Parent</option>
+                </select>
+              </div>
+
+              {mode === 'add' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                    required={mode === 'add'}
+                  />
+                </div>
+              )}
+
               <div className="flex justify-end mt-4">
                 <button
                   type="button"

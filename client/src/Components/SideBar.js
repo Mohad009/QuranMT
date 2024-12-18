@@ -91,7 +91,7 @@ function Sidebar() {
         </NavLink>
 
         <NavLink 
-          to="/users" 
+          to="/manageUsers" 
           className={({ isActive }) => 
             `${linkClasses} ${isActive ? 'bg-emerald-900' : 'hover:bg-emerald-900'}`
           }

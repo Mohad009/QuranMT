@@ -7,8 +7,9 @@ import { useSelector } from 'react-redux';
 import ProgressTracking from './Components/PrograssTracking';
 import AttendancePage from './Components/AttendancePage';
 import SettingsPage from './Components/SettingsPage';
-import ManageUsers from './Components/ManageUsers';
+// import ManageUsers from './Components/ManageUsers';
 import ProtectedRoute from './Components/ProtectedRoute';
+import ManageUsers from './Components/users/ManageUsers';
 
 function App() {
   // Don't show sidebar on login page
@@ -26,8 +27,8 @@ function App() {
             <Route path='/admin' element={<AdminDashboard/>}/>
             <Route path='/progress' element={<ProgressTracking/>}/>
             <Route path="/attendance" element={<ProtectedRoute><AttendancePage/></ProtectedRoute>} />
-            <Route path="/settings" element={<SettingsPage/>} />
-            <Route path="/manageUsers" element={<ManageUsers/>} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage/></ProtectedRoute>} />
+            <Route path="/manageUsers" element={<ProtectedRoute><ManageUsers/></ProtectedRoute>} />
           </Routes>
         </main>
       </div>

@@ -188,3 +188,26 @@ app.post('/recordAttendance', async (req, res) => {
       res.status(500).json({ error: 'Failed to update hifz progress' });
     }
   });
+
+  // Fetch all users
+  app.get('/users', async (req, res) => {
+    try {
+      const users = await userModel.find({}, '-password'); // Exclude password field
+      res.status(200).json({ users });
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
+
+  // Delete user
+  app.delete('/users/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      await userModel.findByIdAndDelete(userId);
+      res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({ error: 'Failed to delete user' });
+    }
+  });
