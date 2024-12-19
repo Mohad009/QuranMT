@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../Features/UserSlice';
 import { Navigate } from 'react-router-dom';
 
@@ -7,26 +7,36 @@ function Login() {
   const [role, setRole] = useState('teacher');
   const [pNumber, setPNumber] = useState(0);
   const [password, setPassword] = useState('');
-  const dispatch=useDispatch()
-  const userTypes=['teacher','admin','parent']
-  const {msg,isLogin,user}=useSelector(state=>state.users)
-  console.log(user)
-const handleSubmit=(e)=>{
-  e.preventDefault();
-  dispatch(login({pNumber, password}))
-  if (isLogin) {
-    return <Navigate to={`/${role}`} replace />;
+  const dispatch = useDispatch();
+  
+  const userTypes = ['teacher', 'parent'];
+  const { msg, isLogin, user } = useSelector(state => state.users);
+
+  // If already logged in, redirect to appropriate dashboard
+  if (isLogin && user) {
+    switch (user.utype) {
+      case 'admin':
+        return <Navigate to="/admin" replace />;
+      case 'teacher':
+        return <Navigate to="/teacher" replace />;
+      case 'parent':
+        return <Navigate to="/parent-dashboard" replace />;
+      default:
+        return <Navigate to="/" replace />;
+    }
   }
 
-
-}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+     dispatch(login({ pNumber, password }));
+  };
 
   return (
     <div className="bg-gradient-to-br from-emerald-50 to-teal-100 min-h-screen">
       <div className="container mx-auto px-4 h-screen flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-emerald-600">Quran Memorization Tracker</h1>
+            <h1 className="text-3xl font-bold text-emerald-600">Quran Memorize Tracker</h1>
             <p className="text-gray-600 mt-2">Welcome back! Please login to continue.</p>
           </div>
 

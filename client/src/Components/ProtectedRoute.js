@@ -12,6 +12,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     );
   }
 
+  // If not logged in, redirect to login page
   if (!isLogin) {
     return <Navigate to="/" replace />;
   }

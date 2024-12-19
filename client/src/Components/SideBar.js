@@ -8,15 +8,19 @@ import { BsCalendarCheck } from 'react-icons/bs';
 import { FiLogOut } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../Features/UserSlice';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.users);
   const linkClasses = "flex items-center px-4 py-3";
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate('/', { replace: true });
+    setIsProfileOpen(false);
   };
   
   // Define navigation links based on user role

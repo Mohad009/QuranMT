@@ -24,9 +24,12 @@ export const login=createAsyncThunk('users/login',async(userData)=>{
     try{
         const response=await axios.post('http://localhost:5000/login',{pNumber:userData.pNumber,password:userData.password})
         const user=response.data.user
-        localStorage.setItem('user', JSON.stringify(user));
         const msg=response.data.msg
-        return {user,msg}
+        
+localStorage.setItem('user', JSON.stringify(user));
+return {user,msg}
+        
+
     }catch(e){
         const msg=e.message
         return {msg}
