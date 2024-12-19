@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { registerUser } from '../../Features/UserSlice';
+import { updateUser } from '../../Features/UserSlice';
+import { userValidationSchema } from '../../Validation/userValidation';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-// Move initialFormState outside component
 const initialFormState = {
   name: '',
   pNumber: '',
@@ -16,36 +19,54 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState(initialFormState);
 
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors },
+    reset,
+    setValue
+  } = useForm({
+    resolver: yupResolver(userValidationSchema),
+    defaultValues: {
+      ...initialFormState,
+      mode
+    }
+  });
+
   useEffect(() => {
-    // Reset form when modal opens/closes or mode changes
     if (!isOpen || mode === 'add') {
+      reset({
+        ...initialFormState,
+        mode
+      });
       setFormData(initialFormState);
     }
     
-    // Only populate form data if it's edit mode and we have user data
     if (isOpen && mode === 'edit' && user) {
-      setFormData({
+      const userData = {
         name: user.name || '',
         pNumber: user.PNumber || '',
         utype: user.utype || 'teacher',
         isActive: user.isActive,
-        password: ''
+        password: '',
+        mode
+      };
+      Object.keys(userData).forEach(key => {
+        setValue(key, userData[key]);
       });
+      setFormData(userData);
     }
-  }, [isOpen, mode, user]); // No need to include initialFormState in dependencies
+  }, [isOpen, mode, user, reset, setValue]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit =  (data) => {
     if (mode === 'add') {
-      await dispatch(registerUser(formData));
+      console.log("new user",data)
+       dispatch(registerUser(data));
+    }else{
+      console.log("Dispatching updateUser with data:", { userId: user._id, userData: data });
+      dispatch(updateUser({userId: user._id,
+        userData: data}))
+       
     }
     onClose();
   };
@@ -59,19 +80,23 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             {mode === 'add' ? 'Add New User' : 'Edit User'}
           </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Full Name
               </label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                required
+                {...register("name", {
+                  onChange: (e) => setFormData(prev => ({ ...prev, name: e.target.value }))
+                })}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                placeholder="Enter full name"
               />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+              )}
             </div>
 
             <div>
@@ -80,12 +105,16 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
               </label>
               <input
                 type="tel"
-                name="pNumber"
-                value={formData.pNumber}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                required
+                {...register("pNumber", {
+                  onChange: (e) => setFormData(prev => ({ ...prev, pNumber: e.target.value }))
+                })}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.pNumber ? 'border-red-500' : 'border-gray-300'}`}
+                placeholder="Enter phone number"
               />
+              {errors.pNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.pNumber.message}</p>
+              )}
             </div>
 
             <div>
@@ -93,15 +122,19 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
                 User Type
               </label>
               <select
-                name="utype"
-                value={formData.utype}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                {...register("utype", {
+                  onChange: (e) => setFormData(prev => ({ ...prev, utype: e.target.value }))
+                })}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.utype ? 'border-red-500' : 'border-gray-300'}`}
               >
                 <option value="teacher">Teacher</option>
                 <option value="admin">Admin</option>
                 <option value="parent">Parent</option>
               </select>
+              {errors.utype && (
+                <p className="mt-1 text-sm text-red-600">{errors.utype.message}</p>
+              )}
             </div>
 
             <div>
@@ -109,29 +142,35 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
                 Status
               </label>
               <select
-                name="isActive"
-                value={formData.isActive}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                {...register("isActive", {
+                  onChange: (e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))
+                })}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.isActive ? 'border-red-500' : 'border-gray-300'}`}
               >
-                <option value={true}>Active</option>
-                <option value={false}>Inactive</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
               </select>
+              {errors.isActive && (
+                <p className="mt-1 text-sm text-red-600">{errors.isActive.message}</p>
+              )}
             </div>
 
-            {mode === 'add' && (
+            { (
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
                 <input
                   type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                  required={mode === 'add'}
+                  {...register("password")}
+                  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 
+                    ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder={mode === 'edit' ? "Enter New password" : "Enter password"}
                 />
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                )}
               </div>
             )}
 
@@ -164,7 +203,7 @@ UserModal.propTypes = {
   user: PropTypes.shape({
     _id: PropTypes.string,
     name: PropTypes.string,
-    PNumber: PropTypes.string,
+    PNumber: PropTypes.number,
     utype: PropTypes.string,
     isActive: PropTypes.bool
   })

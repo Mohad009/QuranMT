@@ -1,16 +1,21 @@
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../Features/UserSlice';
 import { Navigate } from 'react-router-dom';
+import { loginValidationSchema } from '../Validation/loginValidation';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 function Login() {
-  const [role, setRole] = useState('teacher');
-  const [pNumber, setPNumber] = useState(0);
-  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  
-  const userTypes = ['teacher', 'parent'];
   const { msg, isLogin, user } = useSelector(state => state.users);
+
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors } 
+  } = useForm({
+    resolver: yupResolver(loginValidationSchema)
+  });
 
   // If already logged in, redirect to appropriate dashboard
   if (isLogin && user) {
@@ -26,9 +31,8 @@ function Login() {
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-     dispatch(login({ pNumber, password }));
+  const onSubmit = (data) => {
+    dispatch(login({ pNumber: data.pNumber, password: data.password }));
   };
 
   return (
@@ -40,54 +44,51 @@ function Login() {
             <p className="text-gray-600 mt-2">Welcome back! Please login to continue.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Role Selection */}
-            <div className="flex space-x-4 mb-6">
-              {userTypes.map((roleOption) => (
-                <label key={roleOption} className="flex-1">
-                  <input
-                    type="radio"
-                    name="role"
-                    value={roleOption}
-                    checked={role === roleOption}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="peer hidden"
-                  />
-                  <div className="text-center p-4 border rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 cursor-pointer">
-                    {roleOption.charAt(0).toUpperCase() + roleOption.slice(1)}
-                  </div>
-                </label>
-              ))}
-            </div>
-
-            {/* Form fields */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
               <input
                 type="tel"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                required
-                onChange={(e) => setPNumber(e.target.value)}
+                {...register("pNumber")}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                  errors.pNumber ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your phone number"
               />
+              {errors.pNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.pNumber.message}</p>
+              )}
             </div>
 
             <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" 
-                           className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                           onChange={(e) => setPassword(e.target.value)}
-                           required/>
-                           
-                </div>
-                <div className="text-right">
-                    {/* <a href="#" className="text-sm text-emerald-600 hover:text-emerald-700">Forgot password?</a> */}
-                    {msg}
-                </div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input 
+                type="password"
+                {...register("password")}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                  errors.password ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your password"
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              )}
+            </div>
 
+            {msg && (
+              <div className="text-center">
+                <p className={`text-sm ${msg.includes('successful') ? 'text-green-600' : 'text-red-600'}`}>
+                  {msg}
+                </p>
+              </div>
+            )}
 
             <button
+              type="submit"
               className="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700 transition duration-200"
             >
               Login

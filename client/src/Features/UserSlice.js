@@ -17,8 +17,26 @@ export const registerUser=createAsyncThunk('users/registerUser',(async(data)=>{
     const msg=e.message
     return{msg}
   }
-
 }))
+//updatae the user
+export const updateUser=createAsyncThunk('users/updateUser',(async({userId,userData})=>{
+  try{
+    const response=await axios.put(`http://localhost:5000/updateUser/${userId}`,{
+      name:userData.name,
+      pNumber:userData.pNumber,
+      utype:userData.utype,
+      isActive:userData.isActive,
+      password:userData.password
+    })
+    const {msg,user}=response.data.msg
+    return ({msg,user})
+  }catch(e){
+    const msg=e.message
+return {msg}
+  }
+}))
+
+
 //login
 export const login=createAsyncThunk('users/login',async(userData)=>{
     try{
@@ -94,12 +112,25 @@ export const userSlice=createSlice({
       
       })
       .addCase(registerUser.rejected,(state,action)=>{
-        console.log("login rejected")
+       
         state.isloading=false
         state.msg=action.payload.msg
       })
 
-
+      builder.addCase(updateUser.pending,(state)=>{
+        state.isloading=true
+  
+      }).addCase(updateUser.fulfilled,(state,action)=>{
+          state.isloading = false;
+          state.isSuccess = true;
+          state.msg = action.payload.msg;
+      
+      })
+      .addCase(updateUser.rejected,(state,action)=>{
+  
+        state.isloading=false
+        state.msg=action.payload.msg
+      })
 
         builder.addCase(login.pending,(state)=>{
             console.log("login pending")
