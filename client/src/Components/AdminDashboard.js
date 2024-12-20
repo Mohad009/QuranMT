@@ -1,17 +1,23 @@
-import { useState } from 'react';
-
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllUsers } from '../Features/UserSlice';
+import { fetchStudents } from '../Features/studentSlice';
+import moment from 'moment';
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('teachers');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAllUsers());
+    dispatch(fetchStudents());
+  }, [dispatch]);
 
   return (
     <div className="flex h-screen">
-   
       <main className="flex-1 overflow-y-auto">
         <Header />
         <div className="p-6">
           <StatisticsCards />
-          <UserManagement activeTab={activeTab} setActiveTab={setActiveTab} />
           <RecentActivity />
         </div>
       </main>
@@ -20,13 +26,11 @@ function AdminDashboard() {
 }
 
 function Header() {
+  const {user}=useSelector((state)=>state.users)
   return (
     <header className="bg-white shadow-sm">
       <div className="flex items-center justify-between px-6 py-4">
-        <h2 className="text-xl font-semibold text-gray-800">Admin Dashboard</h2>
-        <button className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">
-          Add New User
-        </button>
+        <h2 className="text-xl font-semibold text-gray-800">Welcome, {user.name} </h2>
       </div>
     </header>
   );
@@ -49,11 +53,30 @@ function StatCard({ icon, title, count, color }) {
 }
 
 function StatisticsCards() {
+  const { users } = useSelector(state => state.users);
+  const { students } = useSelector(state => state.students);
+
   const stats = [
-    { title: 'Total Users', count: 156, color: 'emerald' },
-    { title: 'Students', count: 120, color: 'blue' },
-    { title: 'Teachers', count: 12, color: 'purple' },
-    { title: 'Parents', count: 24, color: 'yellow' }
+    { 
+      title: 'Total Users', 
+      count: users.length, 
+      color: 'emerald' 
+    },
+    { 
+      title: 'Students', 
+      count: students.length, 
+      color: 'blue' 
+    },
+    { 
+      title: 'Teachers', 
+      count: users.filter(user => user.utype === 'teacher').length, 
+      color: 'purple' 
+    },
+    { 
+      title: 'Parents', 
+      count: users.filter(user => user.utype === 'parent').length, 
+      color: 'yellow' 
+    }
   ];
 
   return (
@@ -65,127 +88,43 @@ function StatisticsCards() {
   );
 }
 
-function UserManagement({ activeTab, setActiveTab }) {
-  const tabs = ['teachers', 'students', 'parents'];
-
-  return (
-    <div className="bg-white rounded-lg shadow mb-6">
-      <div className="border-b border-gray-200">
-        <nav className="flex -mb-px">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 border-b-2 ${
-                activeTab === tab
-                  ? 'border-emerald-500 text-emerald-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              } font-medium`}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-        </nav>
-      </div>
-      <UserTable />
-    </div>
-  );
-}
-
-function UserTable() {
-  const users = [
-    {
-      id: 'T001',
-      name: 'Muhammad Ali',
-      email: 'mali@example.com',
-      status: 'Active',
-      students: '15 Students',
-    },
-    // Add more users as needed
-  ];
-
-  return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Email
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Students
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user) => (
-            <UserRow key={user.id} user={user} />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function UserRow({ user }) {
-  return (
-    <tr>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center">
-          <img
-            className="h-10 w-10 rounded-full"
-            src={`https://ui-avatars.com/api/?name=${user.name.replace(' ', '+')}`}
-            alt=""
-          />
-          <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">{user.name}</div>
-            <div className="text-sm text-gray-500">ID: {user.id}</div>
-          </div>
-        </div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{user.email}</div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-          {user.status}
-        </span>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-        {user.students}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-        <button className="text-emerald-600 hover:text-emerald-900 mr-3">Edit</button>
-        <button className="text-red-600 hover:text-red-900">Delete</button>
-      </td>
-    </tr>
-  );
-}
-
 function RecentActivity() {
+  const { users } = useSelector(state => state.users);
+  const { students } = useSelector(state => state.students);
+
+  // Get the 5 most recent users and students
+  const recentUsers = [...users]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
+
+  const recentStudents = [...students]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
+
+  // Combine and sort both arrays
   const activities = [
-    {
-      id: 1,
-      color: 'emerald',
-      message: 'New teacher account created for Sarah Ahmed',
-      time: '2 hours ago',
-    },
-    {
-      id: 2,
+    ...recentUsers.map(user => ({
+      id: user._id,
+      color: user.utype === 'teacher' ? 'purple' : user.utype === 'parent' ? 'yellow' : 'emerald',
+      message: `New ${user.utype} account created for ${user.name}`,
+      time: user.createdAt,
+      type: 'user'
+    })),
+    ...recentStudents.map(student => ({
+      id: student._id,
       color: 'blue',
-      message: 'Student Ahmed Ali assigned to teacher Muhammad Ali',
-      time: '5 hours ago',
-    },
-  ];
+      message: `New student ${student.firstName} ${student.lastName} added`,
+      time: student.createdAt,
+      type: 'student'
+    }))
+  ]
+    .sort((a, b) => new Date(b.time) - new Date(a.time))
+    .slice(0, 5)
+    .map(activity => ({
+      ...activity,
+      timeFormatted: moment(activity.time).fromNow(),
+      fullDate: moment(activity.time).format('MMMM Do YYYY, h:mm a')
+    }));
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -198,9 +137,15 @@ function RecentActivity() {
             <div key={activity.id} className="flex items-center">
               <div className={`w-2 h-2 bg-${activity.color}-500 rounded-full`}></div>
               <p className="ml-4 text-sm text-gray-600">{activity.message}</p>
-              <span className="ml-auto text-xs text-gray-400">{activity.time}</span>
+              <div className="ml-auto text-right">
+                <span className="text-xs text-gray-400">{activity.timeFormatted}</span>
+                <span className="block text-xs text-gray-400">{activity.fullDate}</span>
+              </div>
             </div>
           ))}
+          {activities.length === 0 && (
+            <p className="text-center text-gray-500">No recent activity</p>
+          )}
         </div>
       </div>
     </div>

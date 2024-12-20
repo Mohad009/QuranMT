@@ -47,7 +47,7 @@ function Sidebar() {
         break;
       case 'parent':
         links.push(
-          { to: '/parent-dashboard', icon: RiDashboardLine, text: 'Dashboard' },
+          { to: '/parent', icon: RiDashboardLine, text: 'Dashboard' },
           { to: '/settings', icon: IoSettingsOutline, text: 'Settings' }
         );
         break;

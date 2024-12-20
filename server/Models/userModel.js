@@ -5,7 +5,12 @@ const userSchema=mongoose.Schema({
     utype:{type:String,required:true},
     isActive:{type:Boolean,required:true},
     password:{type:String,required:true}
-})
+    
+},
+{
+    timestamps: true
+  }
+)
 
 const userModel=mongoose.model('users',userSchema)
 export default userModel

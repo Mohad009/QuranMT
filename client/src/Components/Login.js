@@ -25,7 +25,7 @@ function Login() {
       case 'teacher':
         return <Navigate to="/teacher" replace />;
       case 'parent':
-        return <Navigate to="/parent-dashboard" replace />;
+        return <Navigate to="/parent" replace />;
       default:
         return <Navigate to="/" replace />;
     }

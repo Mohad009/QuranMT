@@ -302,7 +302,7 @@ app.post('/recordAttendance', async (req, res) => {
         objectId,
         {
           name,
-          PNumber
+          PNumber:parseInt(PNumber)
         },
         { new: true }
       ).select('-password');
@@ -342,5 +342,3 @@ app.post('/recordAttendance', async (req, res) => {
   });
 
 
-
-  //update user profile

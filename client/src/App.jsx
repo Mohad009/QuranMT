@@ -10,6 +10,7 @@ import SettingsPage from './Components/SettingsPage';
 import ManageStudents from './Components/students/ManageStudents';
 import ProtectedRoute from './Components/ProtectedRoute';
 import ManageUsers from './Components/users/ManageUsers';
+import ParentDashboard from './Components/ParentDashboard';
 
 function App() {
   const { isLogin, user } = useSelector((state) => state.users);
@@ -79,6 +80,14 @@ function App() {
                   <AttendancePage />
                 </ProtectedRoute>
               } 
+            />
+
+            {/*parent route */}
+            <Route
+            path='/parent'
+            element={
+              <ProtectedRoute allowedRoles={['parent']}><ParentDashboard/></ProtectedRoute>
+            }
             />
 
             {/* Shared Routes */}
