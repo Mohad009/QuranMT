@@ -17,12 +17,12 @@ function Sidebar() {
   const { user } = useSelector((state) => state.users);
   const linkClasses = "flex items-center px-4 py-3";
 
-  const handleLogout = async () => {
-    await dispatch(logout());
+  const handleLogout =  () => {
+    dispatch(logout());
     navigate('/', { replace: true });
     setIsProfileOpen(false);
   };
-  
+
   // Define navigation links based on user role
   const getNavLinks = () => {
     const links = [];
@@ -63,7 +63,8 @@ function Sidebar() {
       <div className="p-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Quran MT</h1>
-          <p className="text-sm text-emerald-200">Teacher Dashboard</p>
+          
+          <p className="text-sm text-emerald-200">{user?.utype.charAt(0).toUpperCase()+user?.utype.slice(1)} Dashboard</p>
         </div>
         {/* Profile Icon and Dropdown */}
         <div className="relative">
@@ -72,7 +73,7 @@ function Sidebar() {
             className="p-2 rounded-full hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
-              {user?.name ? user.name[0].toUpperCase() : 'U'}
+              {user.name[0].toUpperCase()}
             </div>
           </button>
           

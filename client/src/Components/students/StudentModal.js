@@ -1,53 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStudent, updateStudent } from '../../Features/studentSlice';
-
-const initialFormState = {
-  firstName: '',
-  lastName: '',
-  teacherId: '',
-  parentNumber: ''
-};
+import { studentValidationSchema } from '../../Validation/studentValidation';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const StudentModal = ({ isOpen, onClose, mode, student }) => {
   const dispatch = useDispatch();
   const { users } = useSelector(state => state.users);
   const teachers = users.filter(user => user.utype === 'teacher' && user.isActive);
-  
-  const [formData, setFormData] = useState(initialFormState);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors }
+  } = useForm({
+    resolver: yupResolver(studentValidationSchema),
+  });
 
   useEffect(() => {
-    if (!isOpen || mode === 'add') {
-      setFormData(initialFormState);
+    if (!isOpen) {
+      reset();
     }
-    
+
     if (isOpen && mode === 'edit' && student) {
-      setFormData({
-        firstName: student.firstName || '',
-        lastName: student.lastName || '',
-        teacherId: student.teacherId?._id || '',
-        parentNumber: student.parentNumber || ''
+      setValue('firstName', student.firstName || '');
+      setValue('lastName', student.lastName || '');
+      setValue('teacherId', student.teacherId?._id || '');
+      setValue('parentNumber', student.parentNumber || '');
+    }
+
+    if (isOpen && mode === 'add') {
+      reset({
+        firstName: '',
+        lastName: '',
+        teacherId: '',
+        parentNumber: ''
       });
     }
-  }, [isOpen, mode, student]);
+  }, [isOpen, mode, student, reset, setValue]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = (data) => {
     if (mode === 'add') {
-       dispatch(addStudent(formData));
+      dispatch(addStudent(data));
     } else if (mode === 'edit' && student?._id) {
-       dispatch(updateStudent({ 
-        id: student._id, 
-        studentData: formData 
+      dispatch(updateStudent({
+        id: student._id,
+        studentData: data
       }));
     }
     onClose();
@@ -62,67 +64,67 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             {mode === 'add' ? 'Add New Student' : 'Edit Student'}
           </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First Name
-              </label>
+              <label className="block text-sm font-medium text-gray-700">First Name</label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                required
+                {...register('firstName')}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.firstName ? 'border-red-500' : 'border-gray-300'
+                } rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500`}
               />
+              {errors.firstName && (
+                <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Last Name</label>
               <input
                 type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                required
+                {...register('lastName')}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.lastName ? 'border-red-500' : 'border-gray-300'
+                } rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500`}
               />
+              {errors.lastName && (
+                <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Assign Teacher
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Assign Teacher</label>
               <select
-                name="teacherId"
-                value={formData.teacherId}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                required
+                {...register('teacherId')}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.teacherId ? 'border-red-500' : 'border-gray-300'
+                } rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500`}
               >
                 <option value="">Select Teacher</option>
-                {teachers.map(teacher => (
+                {teachers.map((teacher) => (
                   <option key={teacher._id} value={teacher._id}>
                     {teacher.name}
                   </option>
                 ))}
               </select>
+              {errors.teacherId && (
+                <p className="text-red-500 text-xs mt-1">{errors.teacherId.message}</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Parent Phone Number
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Parent Phone Number</label>
               <input
                 type="tel"
-                name="parentNumber"
-                value={formData.parentNumber}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-                required
+                {...register('parentNumber')}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.parentNumber ? 'border-red-500' : 'border-gray-300'
+                } rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500`}
               />
+              {errors.parentNumber && (
+                <p className="text-red-500 text-xs mt-1">{errors.parentNumber.message}</p>
+              )}
             </div>
 
             <div className="flex justify-end mt-4">
@@ -163,4 +165,4 @@ StudentModal.propTypes = {
   })
 };
 
-export default StudentModal; 
+export default StudentModal;

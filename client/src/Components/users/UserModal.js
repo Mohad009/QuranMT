@@ -33,7 +33,12 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
     }
   });
 
+  
   useEffect(() => {
+
+    if (!isOpen) {
+      reset();
+    }
     if (!isOpen || mode === 'add') {
       reset({
         ...initialFormState,

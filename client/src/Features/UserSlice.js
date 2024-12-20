@@ -37,22 +37,26 @@ return {msg}
 }))
 
 
-//login
-export const login=createAsyncThunk('users/login',async(userData)=>{
-    try{
-        const response=await axios.post('http://localhost:5000/login',{pNumber:userData.pNumber,password:userData.password})
-        const user=response.data.user
-        const msg=response.data.msg
-        
-localStorage.setItem('user', JSON.stringify(user));
-return {user,msg}
-        
+// login
+export const login = createAsyncThunk(
+    'users/login',
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await axios.post('http://localhost:5000/login', {
+                pNumber: userData.pNumber,
+                password: userData.password
+            });
+            const user = response.data.user;
+            const msg = response.data.msg;
 
-    }catch(e){
-        const msg=e.message
-        return {msg}
+            localStorage.setItem('user', JSON.stringify(user));
+            return { user, msg };
+        } catch (e) {
+            const msg = e.response?.data?.msg || e.message;
+            return rejectWithValue({ msg });
+        }
     }
-})
+);
 
 //logout
 export const logout=createAsyncThunk("users/logout",async()=>{
@@ -83,6 +87,35 @@ export const deleteUser = createAsyncThunk('users/delete', async (userId) => {
     throw error;
   }
 });
+
+export const updateProfile = createAsyncThunk(
+  'users/updateProfile',
+  async ({ userId, userData }) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/updateProfile/${userId}`, {
+        name: userData.fullName,
+        PNumber: userData.phoneNumber
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  'users/updatePassword',
+  async ({ userId, newPassword }) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/updatePassword/${userId}`, {
+        newPassword
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 
 const initialState = {
     user: JSON.parse(localStorage.getItem('user')) || null,
@@ -177,6 +210,30 @@ export const userSlice=createSlice({
             })
             .addCase(deleteUser.fulfilled, (state, action) => {
               state.users = state.users.filter(user => user._id !== action.payload);
+            })
+            .addCase(updateProfile.pending, (state) => {
+              state.isloading = true;
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+              state.isloading = false;
+              state.user = action.payload.user;
+              state.msg = action.payload.msg;
+              localStorage.setItem('user', JSON.stringify(action.payload.user));
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
+              state.isloading = false;
+              state.isError = action.error.message;
+            })
+            .addCase(updatePassword.pending, (state) => {
+              state.isloading = true;
+            })
+            .addCase(updatePassword.fulfilled, (state, action) => {
+              state.isloading = false;
+              state.msg = action.payload.msg;
+            })
+            .addCase(updatePassword.rejected, (state, action) => {
+              state.isloading = false;
+              state.isError = action.error.message;
             });
     }
 })

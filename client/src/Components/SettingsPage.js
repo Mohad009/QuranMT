@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { profileValidationSchema, passwordValidationSchema } from '../Validation/settingsValidation';
+import { updateProfile, updatePassword } from '../Features/UserSlice';
 
 const SettingsPage = () => {
-  const handleSaveChanges = () => {
-    // Handle saving all changes
-  };
+  const { user } = useSelector(state => state.users);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -15,40 +17,40 @@ const SettingsPage = () => {
       </header>
 
       <div className="p-6">
-        <ProfileSettings />
-        <PasswordSettings />
-        
-        {/* Save Changes Button */}
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={handleSaveChanges}
-            className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700"
-          >
-            Save Changes
-          </button>
-        </div>
+        <ProfileSettings userInfo={user} />
+        <PasswordSettings userInfo={user}/>
       </div>
     </div>
   );
 };
 
-export default SettingsPage;
-
-
-
-const ProfileSettings = () => {
-  const [profileData, setProfileData] = useState({
-    fullName: 'User Name',
-    phoneNumber: '+1234567890'
+const ProfileSettings = ({ userInfo }) => {
+  const dispatch = useDispatch();
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors } 
+  } = useForm({
+    resolver: yupResolver(profileValidationSchema),
+    defaultValues: {
+      fullName: userInfo.name,
+      phoneNumber: userInfo.PNumber
+    }
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const onSubmit = (data) => {
+    dispatch(updateProfile({
+      userId: userInfo._id,
+      userData: data
+    }))
+      .unwrap()
+      .then(() => {
+        alert('Profile updated successfully');
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert('Failed to update profile: ' + error.message);
+      });
   };
 
   return (
@@ -57,7 +59,7 @@ const ProfileSettings = () => {
         <h3 className="text-lg font-semibold text-gray-800">Profile Information</h3>
       </div>
       <div className="p-6">
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -65,11 +67,13 @@ const ProfileSettings = () => {
               </label>
               <input
                 type="text"
-                name="fullName"
-                value={profileData.fullName}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                {...register("fullName")}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.fullName && (
+                <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -77,13 +81,22 @@ const ProfileSettings = () => {
               </label>
               <input
                 type="tel"
-                name="phoneNumber"
-                value={profileData.phoneNumber}
-                onChange={handleInputChange}
-                pattern="[0-9+\-\s()]*"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                {...register("phoneNumber")}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.phoneNumber && (
+                <p className="mt-1 text-sm text-red-600">{errors.phoneNumber.message}</p>
+              )}
             </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+            >
+              Update Profile
+            </button>
           </div>
         </form>
       </div>
@@ -91,21 +104,30 @@ const ProfileSettings = () => {
   );
 };
 
-
-
-const PasswordSettings = () => {
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+const PasswordSettings = ({userInfo}) => {
+  const dispatch = useDispatch();
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors },
+    reset
+  } = useForm({
+    resolver: yupResolver(passwordValidationSchema)
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const onSubmit = (data) => {
+    dispatch(updatePassword({
+      userId: userInfo._id,
+      newPassword: data.newPassword
+    }))
+      .unwrap()
+      .then(() => {
+        alert("Password updated successfully")
+        reset();
+      })
+      .catch((error) => {
+        console.error('Failed to update password:', error);
+      });
   };
 
   return (
@@ -114,32 +136,21 @@ const PasswordSettings = () => {
         <h3 className="text-lg font-semibold text-gray-800">Change Password</h3>
       </div>
       <div className="p-6">
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Current Password
-              </label>
-              <input
-                type="password"
-                name="currentPassword"
-                value={passwordData.currentPassword}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-            <div></div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 New Password
               </label>
               <input
                 type="password"
-                name="newPassword"
-                value={passwordData.newPassword}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                {...register("newPassword")}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.newPassword ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.newPassword && (
+                <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -147,16 +158,28 @@ const PasswordSettings = () => {
               </label>
               <input
                 type="password"
-                name="confirmPassword"
-                value={passwordData.confirmPassword}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                {...register("confirmPassword")}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-emerald-500 focus:border-emerald-500 
+                  ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+              )}
             </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+            >
+              Update Password
+            </button>
           </div>
         </form>
       </div>
     </div>
   );
 };
+
+export default SettingsPage;
 
