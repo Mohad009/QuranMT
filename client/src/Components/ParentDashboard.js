@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
 import surat from '../quranSurahData';
+import {fetchStudents} from '../Features/studentSlice'
 function ParentDashboard() {
   const { user } = useSelector(state => state.users);
   const { students } = useSelector(state => state.students);
   const [parentStudents, setParentStudents] = useState([]);
-
+  const dispatch =useDispatch()
   useEffect(() => {
+    dispatch(fetchStudents())
     // Filter students based on parent's phone number
     const filteredStudents = students.filter(
-      student =>  parseInt(student.parentNumber) === parseInt(user.PNumber)
+      student =>  student.parentNumber === user.PNumber
     );
     setParentStudents(filteredStudents);
-  }, [students, user.PNumber]);
+  }, [students, user.PNumber,dispatch]);
 
   return (
     <div className="flex h-screen">

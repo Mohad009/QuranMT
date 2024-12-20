@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import surat from "../quranSurahData";
 import { updateHifz } from "../Features/studentSlice";
 import { progressValidationSchema } from "../Validation/progressValidation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+import { fetchStudents } from "../Features/studentSlice";
 const ProgressTracking = () => {
-  const { user } = useSelector((state) => state.users);
   const dispatch = useDispatch();
+  useEffect(()=>{
+    dispatch(fetchStudents())
+  },[dispatch])
+
+  const { user } = useSelector((state) => state.users);
   const { students } = useSelector(state => state.students);
   const [selectedStudent, setSelectedStudent] = useState('');
+    // Filter students based on user type
+    const filteredStudents =
+    user.utype === "teacher"
+      ? students.filter((student) => student.teacherId._id === user._id) // Show only the teacher's students
+      : students; // Show all students for other user types
+
+
   const [formData, setFormData] = useState({
     chapter: '',
     ayahRangeFrom: '',
@@ -59,6 +70,7 @@ const ProgressTracking = () => {
         mark: '',
         notes: ''
       });
+      dispatch(fetchStudents());
       alert('Progress recorded successfully!');
     } catch (err) {
       alert('Failed to record progress: ' + err.message);
@@ -88,7 +100,7 @@ const ProgressTracking = () => {
                 ${errors.studentId ? 'border-red-500' : 'border-gray-300'}`}
             >
               <option value="">Choose a student...</option>
-              {students.map((s) =>
+              {filteredStudents.map((s) =>
                 <option value={s._id} key={s._id}>
                   {s.firstName} {s.lastName}
                 </option>

@@ -23,7 +23,7 @@ function Login() {
       case 'admin':
         return <Navigate to="/admin" replace />;
       case 'teacher':
-        return <Navigate to="/teacher" replace />;
+        return <Navigate to="/progress" replace />;
       case 'parent':
         return <Navigate to="/parent" replace />;
       default:

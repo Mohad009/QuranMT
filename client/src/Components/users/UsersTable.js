@@ -5,7 +5,11 @@ import { deleteUser } from '../../Features/UserSlice';
 
 const UsersTable = ({ users, onEditUser }) => {
   const dispatch = useDispatch();
+  // Get the current logged-in user ID from localStorage or state
+  const currentUserId = JSON.parse(localStorage.getItem('user'))?._id;
 
+  // Filter out the current user from the users list
+  const filteredUsers = users?.filter(user => user._id !== currentUserId);
   const handleDelete = (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       dispatch(deleteUser(userId));
@@ -44,7 +48,7 @@ const UsersTable = ({ users, onEditUser }) => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {users && users.map((user) => (
+          {filteredUsers && filteredUsers.map((user) => (
             <tr key={user._id}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">

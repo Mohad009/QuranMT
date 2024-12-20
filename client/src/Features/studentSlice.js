@@ -69,26 +69,10 @@ export const fetchStudents = createAsyncThunk(
   }
 );
 
-// // Add new student
-// export const addStudent = createAsyncThunk(
-//   'students/addStudent',
-//   async (studentData) => {
-//     try {
-//       const response = await axios.post('http://localhost:5000/addStudent', {
-//         fname: studentData.firstName,
-//         lname: studentData.lastName,
-//         teacherId: studentData.teacherId,
-//         parentNum: studentData.parentNumber
-//       });
-//       return response.data;
-//     } catch (error) {
-//       throw error.response.data.error || 'Failed to add student';
-//     }
-//   }
-// );
+// Add new student
 export const addStudent = createAsyncThunk(
   'students/addStudent',
-  async (studentData, { rejectWithValue }) => {
+  async (studentData) => {
     try {
       const response = await axios.post('http://localhost:5000/addStudent', {
         fname: studentData.firstName,
@@ -98,12 +82,11 @@ export const addStudent = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.msg || 'Failed to add student'
-      );
+      throw error.response.data.error || 'Failed to add student';
     }
   }
 );
+
 
 // Update student
 export const updateStudent = createAsyncThunk(

@@ -302,7 +302,7 @@ app.post('/recordAttendance', async (req, res) => {
         objectId,
         {
           name,
-          PNumber:parseInt(PNumber)
+          PNumber:PNumber
         },
         { new: true }
       ).select('-password');
