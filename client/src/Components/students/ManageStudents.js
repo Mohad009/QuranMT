@@ -34,7 +34,7 @@ const ManageStudents = () => {
       }
       
       if (filters.teacherId) {
-        filtered = filtered.filter(student => student.teacherId === filters.teacherId);
+        filtered = filtered.filter(student => student.teacherId._id === filters.teacherId);
       }
       
       setFilteredStudents(filtered);

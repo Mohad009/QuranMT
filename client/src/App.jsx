@@ -1,11 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './Components/Login';
 import Sidebar from './Components/SideBar';
-import TeacherDashboard from './Components/TeacherDashboard';
 import AdminDashboard from './Components/AdminDashboard';
 import { useSelector } from 'react-redux';
 import ProgressTracking from './Components/PrograssTracking';
-import AttendancePage from './Components/AttendancePage';
 import SettingsPage from './Components/SettingsPage';
 import ManageStudents from './Components/students/ManageStudents';
 import ProtectedRoute from './Components/ProtectedRoute';
@@ -64,23 +62,7 @@ function App() {
               } 
             />
 
-            {/* Teacher Routes */}
-            <Route 
-              path="/teacher" 
-              element={
-                <ProtectedRoute allowedRoles={['teacher']}>
-                  <TeacherDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/attendance" 
-              element={
-                <ProtectedRoute allowedRoles={['teacher']}>
-                  <AttendancePage />
-                </ProtectedRoute>
-              } 
-            />
+
 
             {/*parent route */}
             <Route

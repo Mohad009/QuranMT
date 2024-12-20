@@ -70,8 +70,8 @@ const ProgressTracking = () => {
         mark: '',
         notes: ''
       });
-      dispatch(fetchStudents());
       alert('Progress recorded successfully!');
+      dispatch(fetchStudents());
     } catch (err) {
       alert('Failed to record progress: ' + err.message);
     }

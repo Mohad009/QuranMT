@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 const SearchAndFilter = ({ onFilterChange, filters }) => {
   const { users } = useSelector(state => state.users);
   const teachers = users.filter(user => user.utype === 'teacher' && user.isActive);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     onFilterChange({ [name]: value });

@@ -22,16 +22,7 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
   });
 
   useEffect(() => {
-    if (!isOpen) {
-      reset();
-    }
-
-    if (isOpen && mode === 'edit' && student) {
-      setValue('firstName', student.firstName || '');
-      setValue('lastName', student.lastName || '');
-      setValue('teacherId', student.teacherId?._id || '');
-      setValue('parentNumber', student.parentNumber || '');
-    }
+  
 
     if (isOpen && mode === 'add') {
       reset({
@@ -41,6 +32,14 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
         parentNumber: ''
       });
     }
+    
+    if (isOpen && mode === 'edit' && student) {
+      setValue('firstName', student.firstName || '');
+      setValue('lastName', student.lastName || '');
+      setValue('teacherId', student.teacherId?._id || '');
+      setValue('parentNumber', student.parentNumber || '');
+    }
+
   }, [isOpen, mode, student, reset, setValue]);
 
   const onSubmit = (data) => {

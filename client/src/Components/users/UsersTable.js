@@ -5,6 +5,7 @@ import { deleteUser } from '../../Features/UserSlice';
 
 const UsersTable = ({ users, onEditUser }) => {
   const dispatch = useDispatch();
+
   // Get the current logged-in user ID from localStorage or state
   const currentUserId = JSON.parse(localStorage.getItem('user'))?._id;
 
@@ -54,7 +55,7 @@ const UsersTable = ({ users, onEditUser }) => {
                 <div className="flex items-center">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                    <div className="text-sm text-gray-500">ID: {user._id}</div>
+                    {/* <div className="text-sm text-gray-500">ID: {user._id}</div> */}
                   </div>
                 </div>
               </td>

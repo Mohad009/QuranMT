@@ -40,7 +40,7 @@ const StudentsTable = ({ students, onEditStudent }) => {
                     <div className="text-sm font-medium text-gray-900">
                       {student.firstName} {student.lastName}
                     </div>
-                    <div className="text-sm text-gray-500">ID: {student._id}</div>
+                    {/* <div className="text-sm text-gray-500">ID: {student._id}</div> */}
                   </div>
                 </div>
               </td>

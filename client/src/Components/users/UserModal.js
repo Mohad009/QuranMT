@@ -36,9 +36,6 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
   
   useEffect(() => {
 
-    if (!isOpen) {
-      reset();
-    }
     if (!isOpen || mode === 'add') {
       reset({
         ...initialFormState,
@@ -65,13 +62,12 @@ const UserModal = ({ isOpen, onClose, mode, user }) => {
 
   const onSubmit =  (data) => {
     if (mode === 'add') {
-      console.log("new user",data)
        dispatch(registerUser(data));
-    }else{
-      console.log("Dispatching updateUser with data:", { userId: user._id, userData: data });
+    }else if (mode === 'edit' && user?._id) {
       dispatch(updateUser({userId: user._id,
-        userData: data}))
-       
+        userData: data
+      }));
+      window.location.reload();
     }
     onClose();
   };

@@ -157,7 +157,9 @@ export const userSlice=createSlice({
           state.isloading = false;
           state.isSuccess = true;
           state.msg = action.payload.msg;
-      
+          if (action.payload.user) {
+            state.users.push(action.payload.user);
+          }
       })
       .addCase(updateUser.rejected,(state,action)=>{
   

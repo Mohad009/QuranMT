@@ -39,8 +39,6 @@ function Sidebar() {
         break;
       case 'teacher':
         links.push(
-          { to: '/teacher', icon: RiDashboardLine, text: 'Dashboard' },
-          { to: '/attendance', icon: BsCalendarCheck, text: 'Attendance' },
           { to: '/progress', icon: TbProgress, text: 'Progress Tracking' },
           { to: '/settings', icon: IoSettingsOutline, text: 'Settings' }
         );
