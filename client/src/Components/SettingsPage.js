@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { profileValidationSchema, passwordValidationSchema } from '../Validation/settingsValidation';
 import { updateProfile, updatePassword } from '../Features/UserSlice';
-
+import Location from './Location';
 const SettingsPage = () => {
   const { user } = useSelector(state => state.users);
 
@@ -100,6 +100,7 @@ const ProfileSettings = ({ userInfo }) => {
           </div>
         </form>
       </div>
+      <Location />
     </div>
   );
 };

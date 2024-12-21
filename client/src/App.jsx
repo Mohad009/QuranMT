@@ -95,6 +95,7 @@ function App() {
               path="*" 
               element={<Navigate to={getHomeRoute()} replace />} 
             />
+            
           </Routes>
         </main>
       </div>
