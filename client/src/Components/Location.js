@@ -7,7 +7,7 @@ function Location() {
   const [region, setRegion] = useState(null); // State to hold geolocation
   const getGeoLocationData = async () => {
     try { 
-      const response = await axios.get("https://geo.ipify.org/api/v2/country?apiKey=at_mdAijGphXs9dXAKuSaQKeSqTieQuk");
+      const response = await axios.get("https://geo.ipify.org/api/v2/country?apiKey=*******PasteAPIKey");
       setIp(response.data.ip);
       setCountry(response.data.location.country); // Set country
       setRegion(response.data.location.region); // Set region
