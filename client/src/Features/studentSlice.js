@@ -8,7 +8,7 @@ export const updateHifz = createAsyncThunk(
     console.log('In thunk - hifzData:', hifzData);
     try {
       const response = await axios.put(
-        `http://localhost:5000/updateHifz/${studentId}`,
+        `https://quranmt-server.onrender.com/updateHifz/${studentId}`,
         hifzData
       );
       return response.data;
@@ -23,7 +23,7 @@ export const fetchStudents = createAsyncThunk(
   'students/fetchStudents',
   async () => {
     try {
-      const response = await axios.get('http://localhost:5000/students');
+      const response = await axios.get('https://quranmt-server.onrender.com/students');
       return response.data;
     } catch (error) {
       throw error.response.data.error || 'Failed to fetch students';
@@ -36,7 +36,7 @@ export const addStudent = createAsyncThunk(
   'students/addStudent',
   async (studentData) => {
     try {
-      const response = await axios.post('http://localhost:5000/addStudent', {
+      const response = await axios.post('https://quranmt-server.onrender.com/addStudent', {
         fname: studentData.firstName,
         lname: studentData.lastName,
         teacherId: studentData.teacherId,
@@ -55,7 +55,7 @@ export const updateStudent = createAsyncThunk(
   'students/updateStudent',
   async ({ id, studentData }) => {
     try {
-      const response = await axios.put(`http://localhost:5000/students/${id}`, studentData);
+      const response = await axios.put(`https://quranmt-server.onrender.com/students/${id}`, studentData);
       return response.data;
     } catch (error) {
       throw error.response.data.error || 'Failed to update student';
@@ -68,7 +68,7 @@ export const deleteStudent = createAsyncThunk(
   'students/deleteStudent',
   async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/students/${id}`);
+      const response = await axios.delete(`https://quranmt-server.onrender.com/students/${id}`);
       return response.data;
     } catch (error) {
       throw error.response.data.error || 'Failed to delete student';

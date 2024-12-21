@@ -12,7 +12,7 @@ app.use(cors())
 
 mongoose.connect(process.env.CONSTRING)
 
-app.listen(5000,()=>{
+app.listen(process.env.PORT,()=>{
     console.log("connected to server and database")
 })
 

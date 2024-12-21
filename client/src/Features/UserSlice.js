@@ -4,7 +4,7 @@ import axios from 'axios'
 //register user
 export const registerUser=createAsyncThunk('users/registerUser',(async(data)=>{
   try{
-    const response=await axios.post("http://localhost:5000/registerUser",{
+    const response=await axios.post("https://quranmt-server.onrender.com/registerUser",{
       name:data.name,
       PNumber:data.pNumber,
       utype:data.utype,
@@ -21,7 +21,7 @@ export const registerUser=createAsyncThunk('users/registerUser',(async(data)=>{
 //updatae the user
 export const updateUser=createAsyncThunk('users/updateUser',(async({userId,userData})=>{
   try{
-    const response=await axios.put(`http://localhost:5000/updateUser/${userId}`,{
+    const response=await axios.put(`https://quranmt-server.onrender.com/updateUser/${userId}`,{
       name:userData.name,
       pNumber:userData.pNumber,
       utype:userData.utype,
@@ -42,7 +42,7 @@ export const login = createAsyncThunk(
     'users/login',
     async (userData, { rejectWithValue }) => {
         try {
-            const response = await axios.post('http://localhost:5000/login', {
+            const response = await axios.post('https://quranmt-server.onrender.com/login', {
                 pNumber: userData.pNumber,
                 password: userData.password
             });
@@ -61,7 +61,7 @@ export const login = createAsyncThunk(
 //logout
 export const logout=createAsyncThunk("users/logout",async()=>{
     try{
-      const response =await axios.post("http://localhost:5000/logout")
+      const response =await axios.post("https://quranmt-server.onrender.com/logout")
       localStorage.removeItem('user');
       const msg=response.data.msg
       return ({msg})
@@ -72,7 +72,7 @@ export const logout=createAsyncThunk("users/logout",async()=>{
 
 export const fetchAllUsers = createAsyncThunk('users/fetchAll', async () => {
   try {
-    const response = await axios.get('http://localhost:5000/users');
+    const response = await axios.get('https://quranmt-server.onrender.com/users');
     return response.data.users;
   } catch (error) {
     throw error;
@@ -81,7 +81,7 @@ export const fetchAllUsers = createAsyncThunk('users/fetchAll', async () => {
 
 export const deleteUser = createAsyncThunk('users/delete', async (userId) => {
   try {
-    await axios.delete(`http://localhost:5000/users/${userId}`);
+    await axios.delete(`https://quranmt-server.onrender.com/users/${userId}`);
     return userId;
   } catch (error) {
     throw error;
@@ -92,7 +92,7 @@ export const updateProfile = createAsyncThunk(
   'users/updateProfile',
   async ({ userId, userData }) => {
     try {
-      const response = await axios.put(`http://localhost:5000/updateProfile/${userId}`, {
+      const response = await axios.put(`https://quranmt-server.onrender.com/updateProfile/${userId}`, {
         name: userData.fullName,
         PNumber: userData.phoneNumber
       });
@@ -107,7 +107,7 @@ export const updatePassword = createAsyncThunk(
   'users/updatePassword',
   async ({ userId, newPassword }) => {
     try {
-      const response = await axios.put(`http://localhost:5000/updatePassword/${userId}`, {
+      const response = await axios.put(`https://quranmt-server.onrender.com/updatePassword/${userId}`, {
         newPassword
       });
       return response.data;
