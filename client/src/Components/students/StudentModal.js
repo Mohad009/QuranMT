@@ -65,8 +65,9 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
           </h3>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">First Name</label>
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
               <input
+              id='firstName'
                 type="text"
                 {...register('firstName')}
                 className={`mt-1 block w-full px-3 py-2 border ${
@@ -79,8 +80,9 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Last Name</label>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
               <input
+              id='lastName'
                 type="text"
                 {...register('lastName')}
                 className={`mt-1 block w-full px-3 py-2 border ${
@@ -93,8 +95,9 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Assign Teacher</label>
+              <label htmlFor="teacherId" className="block text-sm font-medium text-gray-700">Assign Teacher</label>
               <select
+              id='teacherId'
                 {...register('teacherId')}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   errors.teacherId ? 'border-red-500' : 'border-gray-300'
@@ -113,8 +116,9 @@ const StudentModal = ({ isOpen, onClose, mode, student }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Parent Phone Number</label>
+              <label htmlFor="parentNumber" className="block text-sm font-medium text-gray-700">Parent Phone Number</label>
               <input
+              id='parentNumber'
                 type="tel"
                 {...register('parentNumber')}
                 className={`mt-1 block w-full px-3 py-2 border ${

@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { loginValidationSchema } from '../Validation/loginValidation';
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import React from 'react';
 
 function Login() {
   const dispatch = useDispatch();
@@ -46,10 +47,11 @@ function Login() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="pNumber" className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
               <input
+              id='pNumber'
                 type="tel"
                 {...register("pNumber")}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
@@ -63,10 +65,11 @@ function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <input 
+                id='password'
                 type="password"
                 {...register("password")}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${

@@ -4,7 +4,7 @@ import { RiDashboardLine } from 'react-icons/ri';
 import { MdOutlinePersonOutline } from 'react-icons/md';
 import { TbProgress } from 'react-icons/tb';
 import { IoSettingsOutline } from 'react-icons/io5';
-import { BsCalendarCheck } from 'react-icons/bs';
+import React from 'react';
 import { FiLogOut } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../Features/UserSlice';
