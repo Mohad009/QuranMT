@@ -46,7 +46,6 @@ const ProfileSettings = ({ userInfo }) => {
       .unwrap()
       .then(() => {
         alert('Profile updated successfully');
-        window.location.reload();
       })
       .catch((error) => {
         alert('Failed to update profile: ' + error.message);
